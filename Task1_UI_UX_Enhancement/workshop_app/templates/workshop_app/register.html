@@ -1,0 +1,79 @@
+{% extends 'workshop_app/base.html' %}
+
+	{% block title %}
+		Register
+	{% endblock %}
+
+{% block content %}
+	<div class="container my-5">
+		<div class="row justify-content-center">
+			<div class="col-12 col-md-10 col-lg-8">
+				<div class="card">
+					<div class="card-header text-center">
+						<h3 class="mb-0">
+							<i class="material-icons" style="vertical-align: middle; margin-right: 8px; color: var(--color-primary);">person_add</i>
+							Coordinator Registration
+						</h3>
+						<p class="text-muted mt-2 mb-0">Join FOSSEE Workshops as a coordinator</p>
+					</div>
+					<div class="card-body">
+						<form action="" method="post">
+							{% csrf_token %}
+							<div class="row">
+								{% for field in form %}
+									<div class="col-md-6">
+										<div class="form-group">
+											<label for="{{ field.id_for_label }}" class="{% if field.field.required %}required{% endif %}">
+												{% if field.name == 'username' %}
+													<i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 18px;">person</i>
+												{% elif field.name == 'email' %}
+													<i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 18px;">email</i>
+												{% elif field.name == 'first_name' %}
+													<i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 18px;">badge</i>
+												{% elif field.name == 'last_name' %}
+													<i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 18px;">badge</i>
+												{% elif field.name == 'password1' %}
+													<i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 18px;">lock</i>
+												{% elif field.name == 'password2' %}
+													<i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 18px;">lock</i>
+												{% endif %}
+												{{ field.label }}
+											</label>
+											{{ field }}
+											{% if field.errors %}
+												<div class="text-danger small mt-1">
+													{% for error in field.errors %}
+														<div><i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 14px;">error</i>{{ error }}</div>
+													{% endfor %}
+												</div>
+											{% endif %}
+										</div>
+									</div>
+								{% endfor %}
+							</div>
+                            <div class="text-center mt-4">
+                                <button class="btn btn-primary btn-lg btn-full-mobile" type="submit">
+                                    <i class="material-icons" style="vertical-align: middle; margin-right: 8px;">person_add</i>
+                                    Register
+                                </button>
+                                <div class="mt-3">
+                                    <a href="{% url 'login' %}" class="btn btn-outline-primary btn-sm btn-full-mobile">
+                                        <i class="material-icons" style="vertical-align: middle; margin-right: 6px;">login</i>
+                                        Already have an account? Log in
+                                    </a>
+                                </div>
+                            </div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<style type="text/css">
+		label.required::after {
+			content: " *";
+			color: var(--color-danger);
+		}
+	</style>
+{% endblock %}

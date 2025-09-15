@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page.title|title }} - FOSSEE Workshops</title>
+    <meta name="description" content="FOSSEE Workshop Booking System - Content Management">
+    <link rel="stylesheet" href="{% static 'cms/css/bootstrap.min.css' %}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script src="{% static 'cms/js/jquery-3.4.1.slim.min.js' %}"></script>
+    <script src="{% static 'cms/js/popper.min.js' %}"></script>
+    {{ page.imports | safe }}
+    <script src="{% static 'cms/js/bootstrap.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'workshop_app/css/base.css' %}" type="text/css"/>
+    <link rel="stylesheet" href="{% static 'workshop_app/css/theme.css' %}?v=2" type="text/css"/>
+</head>
+<body>
+
+<nav class="navbar navbar-dark navbar-expand-lg bg-dark fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <i class="material-icons" style="vertical-align: middle; margin-right: 8px;">school</i>
+            FOSSEE Workshops
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+            </ul>
+            <div class="my-2 my-lg-0">
+                <ul class="navbar-nav">
+                    {% for nav in navs %}
+                        <li class="nav-item">
+                            {% if nav.subnavs %}
+                                <div class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="material-icons" style="vertical-align: middle; margin-right: 4px;">menu</i>
+                                        {{ nav.name }}
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                        {% for subnav in nav.subnavs %}
+                                        <a class="dropdown-item" href="{{ subnav.link }}">
+                                            <i class="material-icons" style="vertical-align: middle; margin-right: 8px; font-size: 18px;">link</i>
+                                            {{ subnav.name }}
+                                        </a>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% else %}
+                                <a class="nav-link" href="{{ nav.link }}">
+                                    <i class="material-icons" style="vertical-align: middle; margin-right: 4px;">link</i>
+                                    {{ nav.name }}
+                                </a>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+<div class="base-content">
+{{ page.content | safe }}
+</div>
+</body>
+</html>

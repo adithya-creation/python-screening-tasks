@@ -1,0 +1,273 @@
+{% extends "workshop_app/base.html" %}
+{% load static %}
+
+{% block title %}
+    Workshop Status
+{% endblock %}
+
+{% block extra-dependencies %}
+    <style >
+    .table-heading{
+        color: #04a9cf;
+    }
+    </style>
+    <link rel="stylesheet" href="{% static 'workshop_app/css/jquery-ui.css' %}" type="text/css"/>
+    <script src="{% static 'workshop_app/js/jquery-1.12.4.js' %}"></script>
+    <script src="{% static 'workshop_app/js/jquery-ui.min.js' %}"></script>
+{% endblock %}
+{% block extra-custom-scripts %}
+    {% load static %}
+    <script src="{% static 'workshop_app/js/datepicker.js' %}"></script>
+{% endblock %}
+
+
+{% block content %}
+    <div class="container my-5">
+    {% if not workshops %}
+            <!-- Welcome Card for New Users -->
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-10 col-lg-8">
+                    <div class="card">
+                        <div class="card-header text-center">
+                            <h3 class="mb-0">
+                                <i class="material-icons" style="vertical-align: middle; margin-right: 8px; color: var(--color-primary);">school</i>
+                                Welcome {{ user.first_name }}!
+                            </h3>
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="mb-4">
+                                <i class="material-icons" style="font-size: 64px; color: var(--color-primary);">workshop</i>
+                            </div>
+                            <p class="lead">Your workshop related information will be shown here.</p>
+                            <p>Please navigate to <strong>Workshop Types</strong> and depending upon your expertise and availability, create a workshop by going to <strong>Create Workshop</strong>.</p>
+                            <div class="mt-4">
+                                <a href="{% url 'workshop_app:workshop_type_list' %}" class="btn btn-primary btn-lg">
+                                    <i class="material-icons" style="vertical-align: middle; margin-right: 8px;">category</i>
+                                    Browse Workshop Types
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    {% else %}
+            <!-- Workshop Status Dashboard -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h2 class="mb-1">
+                                <i class="material-icons" style="vertical-align: middle; margin-right: 8px; color: var(--color-primary);">dashboard</i>
+                                Workshop Dashboard
+                            </h2>
+                            <p class="text-muted mb-0">Manage your workshop assignments and proposals</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accepted Workshops -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="mb-0">
+                                <i class="material-icons" style="vertical-align: middle; margin-right: 8px; color: var(--color-success);">check_circle</i>
+                                Accepted Workshops
+                            </h4>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                <thead>
+                <tr>
+                                            <th class="border-0">
+                                                <i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 18px;">person</i>
+                                                Coordinator
+                                            </th>
+                                            <th class="border-0">
+                                                <i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 18px;">school</i>
+                                                Institute
+                                            </th>
+                                            <th class="border-0">
+                                                <i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 18px;">workshop</i>
+                                                Workshop
+                                            </th>
+                                            <th class="border-0">
+                                                <i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 18px;">event</i>
+                                                Date
+                                            </th>
+                                            <th class="border-0">
+                                                <i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 18px;">info</i>
+                                                Status
+                                            </th>
+                </tr>
+                </thead>
+                                    <tbody>
+                {% for workshop in workshops %}
+                                            {% if workshop.status %}
+                                                <tr>
+                                                    <td>
+                                                        <a href="{% url 'workshop_app:view_profile' workshop.coordinator.id %}" class="text-decoration-none">
+                                                            <i class="material-icons text-primary mr-2" style="vertical-align: middle; font-size: 16px;">person</i>
+                                                            {{ workshop.coordinator.get_full_name }}
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        <i class="material-icons text-info mr-2" style="vertical-align: middle; font-size: 16px;">business</i>
+                                                        {{ workshop.coordinator.profile.institute }}
+                                                    </td>
+                                                    <td>
+                                                        <i class="material-icons text-warning mr-2" style="vertical-align: middle; font-size: 16px;">workshop</i>
+                                                        {{ workshop.workshop_type|capfirst }}
+                            </td>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <i class="material-icons text-primary mr-2" style="vertical-align: middle; font-size: 16px;">event</i>
+                                                            <span>{{ workshop.date|date }}</span>
+                                {% if workshop.date > today %}
+                                                                <button class="btn btn-sm btn-outline-primary ml-2" 
+                                          data-toggle="popinfo"
+                                                                        title="Change Date"
+                                          data-content="Click here to change date"
+                                                                        onclick="changeDate('R,{{ workshop.date|safe }}, {{ forloop.counter }}')">
+                                                                    <i class="material-icons" style="font-size: 16px;">edit</i>
+                                                                </button>
+                                                                <div class="myDialogR{{ forloop.counter }}" style="display: none;" title="Select New Date">
+                                        <form method="post" action="{% url 'workshop_app:change_workshop_date' workshop.id %}">
+                                                                        <div class="form-group">
+                                                                            <label>New Date:</label>
+                                                                            <input type="text" placeholder="Select new date" name="new_date" class="form-control rDate{{ forloop.counter }}"/>
+                                                                        </div>
+                                            {% csrf_token %}
+                                                                        <button class="btn btn-primary btn-sm" type="submit">
+                                                                            <i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 16px;">save</i>
+                                                                            Save
+                                                                        </button>
+                                        </form>
+                                    </div>
+                                {% endif %}
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge badge-success">
+                                                            <i class="material-icons" style="vertical-align: middle; margin-right: 2px; font-size: 14px;">check</i>
+                                                            {{ workshop.get_status }}
+                                                        </span>
+                            </td>
+                                                </tr>
+                        {% endif %}
+                                        {% empty %}
+                                            <tr>
+                                                <td colspan="5" class="text-center py-4">
+                                                    <i class="material-icons" style="font-size: 48px; color: var(--color-text-light); margin-bottom: 16px;">inbox</i>
+                                                    <p class="text-muted mb-0">No accepted workshops found</p>
+                                                </td>
+                    </tr>
+                                        {% endfor %}
+                    </tbody>
+            </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+
+            <!-- Proposed Workshops -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="mb-0">
+                                <i class="material-icons" style="vertical-align: middle; margin-right: 8px; color: var(--color-warning);">pending</i>
+                                Pending Proposals
+                            </h4>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                <thead>
+                <tr>
+                                            <th class="border-0">
+                                                <i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 18px;">person</i>
+                                                Coordinator
+                                            </th>
+                                            <th class="border-0">
+                                                <i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 18px;">school</i>
+                                                Institute
+                                            </th>
+                                            <th class="border-0">
+                                                <i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 18px;">workshop</i>
+                                                Workshop
+                                            </th>
+                                            <th class="border-0">
+                                                <i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 18px;">event</i>
+                                                Date
+                                            </th>
+                                            <th class="border-0">
+                                                <i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 18px;">info</i>
+                                                Status
+                                            </th>
+                                            <th class="border-0">
+                                                <i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 18px;">settings</i>
+                                                Action
+                                            </th>
+                </tr>
+                </thead>
+                                    <tbody>
+                {% csrf_token %}
+                {% for workshop in workshops %}
+                                            {% if not workshop.status and workshop.tnc_accepted %}
+                                                <tr>
+                                                    <td>
+                                                        <a href="{% url 'workshop_app:view_profile' workshop.coordinator.id %}" class="text-decoration-none">
+                                                            <i class="material-icons text-primary mr-2" style="vertical-align: middle; font-size: 16px;">person</i>
+                                                            {{ workshop.coordinator.get_full_name }}
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        <i class="material-icons text-info mr-2" style="vertical-align: middle; font-size: 16px;">business</i>
+                                                        {{ workshop.coordinator.profile.institute }}
+                                                    </td>
+                                                    <td>
+                                                        <i class="material-icons text-warning mr-2" style="vertical-align: middle; font-size: 16px;">workshop</i>
+                                                        {{ workshop.workshop_type }}
+                                                    </td>
+                                                    <td>
+                                                        <i class="material-icons text-primary mr-2" style="vertical-align: middle; font-size: 16px;">event</i>
+                                                        {{ workshop.date|date }}
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge badge-warning">
+                                                            <i class="material-icons" style="vertical-align: middle; margin-right: 2px; font-size: 14px;">schedule</i>
+                                                            {{ workshop.get_status }}
+                                                        </span>
+                            </td>
+                            <td>
+                                                        <a href="{% url 'workshop_app:accept_workshop' workshop.id %}" 
+                                                           class="btn btn-success btn-sm" 
+                                                           onclick="return confirm('Once accepted you cannot reject, you have to personally contact the Coordinator if the workshop is to be cancelled. Are you sure you want to accept the workshop?')">
+                                                            <i class="material-icons" style="vertical-align: middle; margin-right: 4px; font-size: 16px;">check</i>
+                                    Accept
+                                </a>
+                            </td>
+                                                </tr>
+                        {% endif %}
+                                        {% empty %}
+                                            <tr>
+                                                <td colspan="6" class="text-center py-4">
+                                                    <i class="material-icons" style="font-size: 48px; color: var(--color-text-light); margin-bottom: 16px;">inbox</i>
+                                                    <p class="text-muted mb-0">No pending proposals found</p>
+                                                </td>
+                    </tr>
+                                        {% endfor %}
+                    </tbody>
+            </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    {% endif %}
+    </div>
+{% endblock %}

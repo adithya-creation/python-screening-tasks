@@ -1,0 +1,41 @@
+/**
+ * Consistent Layout Styles
+ */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding-top: 76px; /* Account for fixed navbar */
+}
+
+.navbar {
+    z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+.footer {
+    margin-top: auto;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    color: white;
+    text-align: center;
+    z-index: 100;
+}
+
+/* Ensure consistent content spacing */
+.container {
+    flex: 1;
+}
+
+/* Improve spacing on small screens */
+@media (max-width: 576px) {
+    body {
+        padding-top: 70px; /* Slightly less padding on mobile */
+    }
+    
+    .footer {
+        position: static;
+    }
+}
