@@ -70,7 +70,7 @@ Before
 ![Before - Login](screenshots/before/login.png)
 
 After
-![After - Login](screenshots/after/login.jpeg)
+![After - Login](screenshots/after/login.png)
 
 ### Statistics
 Before
